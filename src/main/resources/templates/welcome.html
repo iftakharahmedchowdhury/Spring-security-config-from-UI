@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        color: #4d90fe;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 1.5rem;
+    }
+
+    a {
+        font-size: 1.1rem;
+        color: #4d90fe;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        margin: 0 0.5rem;
+        border: 2px solid #4d90fe;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    a:hover {
+        background-color: #4d90fe;
+        color: white;
+        border-color: #3578e5;
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 2rem;
+        }
+
+        p {
+            font-size: 1rem;
+        }
+
+        a {
+            font-size: 1rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+</style>
+<body>
+<h1>Welcome to the application!</h1>
+<p>please login or registration</p>
+<a th:href="@{/auth/login}">Login</a> | <a th:href="@{/auth/create-user}">Register</a>
+</body>
+</html>

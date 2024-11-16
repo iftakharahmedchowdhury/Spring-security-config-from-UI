@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Permissions</title>
+    <style>
+        /* Add some basic styling */
+        table {
+            width: 60%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h1>Manage Permissions</h1>
+
+<h2>Admin Permissions</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Permission</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="permission : ${adminPermissions}">
+        <td th:text="${permission.url}">/page/one</td>
+        <td>
+            <!-- Delete button for each permission -->
+            <form th:action="@{/permissions/delete/{id}(id=${permission.id})}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>User Permissions</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Permission</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="permission : ${userPermissions}">
+        <td th:text="${permission.url}">/page/two</td>
+        <td>
+            <!-- Delete button for each permission -->
+            <form th:action="@{/permissions/delete/{id}(id=${permission.id})}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

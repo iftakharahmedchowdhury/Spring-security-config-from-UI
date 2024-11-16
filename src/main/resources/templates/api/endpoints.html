@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>API Endpoints</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .get {
+            background-color: #c8e6c9; /* Green */
+            color: green;
+        }
+        .post {
+            background-color: #bbdefb; /* Blue */
+            color: blue;
+        }
+        .put {
+            background-color: #fff3e0; /* Yellow */
+            color: orange;
+        }
+        .delete {
+            background-color: #ffccbc; /* Red */
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Available API Endpoints</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Controller</th>
+        <th>Assign Permission</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${apiEndpoints}">
+        <form th:action="@{/api/addPermission}" method="post">
+            <td th:text="${#strings.substring(entry.key, 0, #strings.indexOf(entry.key, ' '))}">GET</td>
+            <td th:text="${#strings.substring(entry.key, #strings.indexOf(entry.key, ' ') + 1)}">/api/some-endpoint</td>
+            <td th:text="${entry.value}">SomeController</td>
+            <td>
+                <select name="role">
+                    <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"></option>
+                </select>
+            </td>
+            <td>
+                <!-- Hidden field for the URL -->
+                <input type="hidden" name="url" th:value="${entry.key}"/>
+                <button type="submit">Add</button>
+            </td>
+        </form>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
+

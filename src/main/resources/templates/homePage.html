@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+</head>
+<body>
+<h1>Welcome to the Home Page</h1>
+<nav>
+    <ul>
+        <li><a th:href="@{/page/one}">Page One</a></li>
+        <li><a th:href="@{/page/two}">Page Two</a></li>
+        <li><a th:href="@{/page/three}">Page Three</a></li>
+    </ul>
+</nav>
+
+<!-- Logout Button -->
+<div>
+    <button id="logoutButton">Logout</button>
+</div>
+
+<script>
+    document.getElementById('logoutButton').addEventListener('click', function() {
+        const token = getCookie('jwtToken');
+        if (!token) {
+            alert('No token found. Please login again.');
+            return;
+        }
+
+        // Send a POST request to the /auth/logout endpoint
+        fetch('/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Logout failed');
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log(data);
+                alert('Logged out successfully');
+                deleteCookie('jwtToken');
+
+                window.location.href = '/auth/login'; // Redirect to login page
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Logout failed');
+            });
+    });
+    function deleteCookie(name) {
+        document.cookie = name + '=; Max-Age=-99999999; path=/;';
+    }
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+</script>
+
+</body>
+</html>

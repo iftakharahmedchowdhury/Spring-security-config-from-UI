@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+</head>
+<style>
+    /* General body styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f7fc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    /* Container for the form */
+    form {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    /* Header styling */
+    h1 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+        color: #333;
+    }
+
+    /* Form group styling */
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #4d90fe;
+        box-shadow: 0 0 8px rgba(77, 144, 254, 0.2);
+    }
+
+    /* Button styling */
+    button {
+        width: 100%;
+        padding: 0.9rem;
+        font-size: 1.1rem;
+        color: white;
+        background-color: #4d90fe;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #3578e5;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+        form {
+            padding: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+<body>
+<h1>Login</h1>
+<form id="loginForm" th:action="@{/auth/login}"  onsubmit="handleLogin(event)">
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <div>
+        <button type="submit">Login</button>
+    </div>
+</form>
+
+<script>
+    // Function to handle the login form submission
+    function handleLogin(event) {
+        event.preventDefault(); // Prevent the default form submission
+        const form = event.target;
+        const formData = new FormData(form);
+        const jsonData = JSON.stringify(Object.fromEntries(formData.entries())); // Convert form data to JSON
+
+        // Send a POST request to the login endpoint
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: jsonData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Login failed');
+                }
+                return response.json(); // Parse the response JSON
+            })
+            .then(data => {
+                if (data.jwtToken) {
+                    console.log(data.jwtToken);
+                    setCookie('jwtToken', data.jwtToken, 1); // Store the token in a cookie (expires in 1 day)
+
+                    // Fetch home data immediately after successful login
+                    fetchHomeData();
+                } else {
+                    alert('Login failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Login failed');
+            });
+    }
+
+    // Function to set a cookie with the token
+    function setCookie(name, value, days) {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000)); // Set expiry date
+        document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;Secure;SameSite=Strict`;
+    }
+
+    // Function to get the cookie value by name
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function fetchHomeData() {
+        const token = getCookie('jwtToken'); // Get the token from the cookie
+
+        if (!token) {
+            alert('No token found. Please login again.');
+            return;
+        }
+
+        console.log("Sending token:", token);
+        fetch('/home/homes', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token // Send token with the Authorization header
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch home data');
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.body.innerHTML = html;
+                history.pushState({}, null, "/home/homes");
+            })
+            .catch(error => {
+                console.error('Error fetching home data:', error);
+                alert('Failed to fetch home data');
+            });
+    }
+</script>
+
+</body>
+</html>
+
